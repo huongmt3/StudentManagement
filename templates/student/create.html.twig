@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Student{% endblock %}
+
+{% block body %}
+    <h1>Create New Student</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">Create</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('student_index') }}">Back to Student List</a>
+{% endblock %}

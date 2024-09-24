@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Student List{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Student List</h1>
+        <div class="mb-3">
+            <a href="{{ path('student_index', {'sort': 'asc'}) }}" class="btn btn-primary">Ascending</a>
+            <a href="{{ path('student_index', {'sort': 'desc'}) }}" class="btn btn-secondary">Descending</a>
+            <a href="{{ path('student_create') }}" class="btn btn-secondary">Add New Student</a>
+        </div>
+        <div class="bs-example" data-example-id="striped-table">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Registration Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.studentName }}</td>
+                            <td>{{ student.studentEmail }}</td>
+                            <td>{{ student.studentGender ? 'Male' : 'Female' }}</td>
+                            <td>{{ student.dateOfBirth|date('d/m/Y') }}</td>
+                            <td>{{ student.registrationDate|date('d/m/Y') }}</td>
+                            <td>
+                                <a href="{{ path('student_details', {'id': student.id}) }}" class="btn btn-info btn-sm">Details</a>
+                                <a href="{{ path('student_edit', {'id': student.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ path('student_delete', {'id': student.id}) }}" method="post" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ student.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6">No students in the list</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
