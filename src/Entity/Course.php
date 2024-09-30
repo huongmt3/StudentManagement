@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CourseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,28 @@ class Course
      * @ORM\Column(type="date")
      */
     private $endDate;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\StudentCourseDetails", mappedBy="course")
+     */
+    private $studentCourseDetails;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Lecturer", inversedBy="courses")
+     * @ORM\JoinColumn(name="lecturer_id", referencedColumnName="id")
+     */
+    private $instructor;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Assignment", mappedBy="course")
+     */
+    private $assignments;
+
+    public function __construct()
+    {
+        $this->studentCourseDetails = new ArrayCollection();
+        $this->assignments = new ArrayCollection(); // Khởi tạo tập hợp assignments
+    }
 
     public function getId(): ?int
     {
@@ -95,14 +119,86 @@ class Course
         return $this;
     }
 
-    public function getendDate(): ?\DateTimeInterface
+    public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setendDate(\DateTimeInterface $endDate): self
+    public function setEndDate(\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|StudentCourseDetails[]
+     */
+    public function getStudentCourseDetails(): Collection
+    {
+        return $this->studentCourseDetails;
+    }
+
+    public function addStudentCourseDetail(StudentCourseDetails $studentCourseDetail): self
+    {
+        if (!$this->studentCourseDetails->contains($studentCourseDetail)) {
+            $this->studentCourseDetails[] = $studentCourseDetail;
+            $studentCourseDetail->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudentCourseDetail(StudentCourseDetails $studentCourseDetail): self
+    {
+        if ($this->studentCourseDetails->removeElement($studentCourseDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($studentCourseDetail->getCourse() === $this) {
+                $studentCourseDetail->setCourse(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Assignment[]
+     */
+    public function getAssignments(): Collection
+    {
+        return $this->assignments;
+    }
+
+    public function addAssignment(Assignment $assignment): self
+    {
+        if (!$this->assignments->contains($assignment)) {
+            $this->assignments[] = $assignment;
+            $assignment->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssignment(Assignment $assignment): self
+    {
+        if ($this->assignments->removeElement($assignment)) {
+            // set the owning side to null (unless already changed)
+            if ($assignment->getCourse() === $this) {
+                $assignment->setCourse(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getInstructor(): ?Lecturer
+    {
+        return $this->instructor;
+    }
+
+    public function setInstructor(?Lecturer $instructor): self
+    {
+        $this->instructor = $instructor;
 
         return $this;
     }

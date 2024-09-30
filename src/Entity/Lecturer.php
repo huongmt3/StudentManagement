@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LecturerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Lecturer
      * @ORM\Column(type="boolean")
      */
     private $lecturerGender;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Course", mappedBy="instructor")
+     */
+    private $courses;
+
+    public function __construct()
+    {
+        $this->courses = new ArrayCollection(); // Khởi tạo tập hợp courses
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +98,36 @@ class Lecturer
     public function setLecturerGender(bool $lecturerGender): self
     {
         $this->lecturerGender = $lecturerGender;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Course[]
+     */
+    public function getCourses(): Collection
+    {
+        return $this->courses;
+    }
+
+    public function addCourse(Course $course): self
+    {
+        if (!$this->courses->contains($course)) {
+            $this->courses[] = $course;
+            $course->setInstructor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCourse(Course $course): self
+    {
+        if ($this->courses->removeElement($course)) {
+            // set the owning side to null (unless already changed)
+            if ($course->getInstructor() === $this) {
+                $course->setInstructor(null);
+            }
+        }
 
         return $this;
     }
