@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lecturer Details{% endblock %}
+
+{% block body %}
+    <h1>Lecturer Details</h1>
+
+    <ul>
+        <li><strong>Name:</strong> {{ lecturer.lecturerName }}</li>
+        <li><strong>Email:</strong> {{ lecturer.lecturerEmail }}</li>
+        <li><strong>Specialisation:</strong> {{ lecturer.lecturerSpecialisation }}</li>
+        <li><strong>Gender:</strong> {{ lecturer.lecturerGender ? 'Male' : 'Female' }}</li>
+    </ul>
+
+    <a href="{{ path('lecturer_edit', {'id': lecturer.id}) }}">Edit</a>
+    <a href="{{ path('lecturer_index') }}">Back to Lecturer List</a>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Lecturer{% endblock %}
+
+{% block body %}
+    <h1>Create New Lecturer</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">Create</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('lecturer_index') }}">Back to Lecturer List</a>
+{% endblock %}
