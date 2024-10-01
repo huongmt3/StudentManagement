@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Course Details{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Course Details</h1>
+
+        <ul>
+            <li><strong>Course Name:</strong> {{ course.courseName }}</li>
+            <li><strong>Description:</strong> {{ course.description }}</li>
+            <li><strong>Credits:</strong> {{ course.credits }}</li>
+            <li><strong>Start Date:</strong> {{ course.startDate ? course.startDate|date('Y-m-d') : '' }}</li>
+            <li><strong>End Date:</strong> {{ course.endDate ? course.endDate|date('Y-m-d') : '' }}</li>
+            <li><strong>Instructor:</strong> {{ course.instructor.lecturerName }}</li>
+        </ul>
+
+        <a href="{{ path('course_edit', {'id': course.id}) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ path('course_index') }}" class="btn btn-secondary">Back to Course List</a>
+    </div>
+{% endblock %}
