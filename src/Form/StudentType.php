@@ -7,7 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,9 +22,14 @@ class StudentType extends AbstractType
             ->add('studentEmail', EmailType::class, [ 
                 'label' => 'Student Email',
             ])
-            ->add('studentGender', CheckboxType::class, [ 
-                'label' => 'Gender (Male)',
-                'required' => false,
+            ->add('studentGender', ChoiceType::class, [
+                'label' => 'Gender',
+                'choices'  => [
+                    'Male' => 'male',
+                    'Female' => 'female',
+                ],
+                'expanded' => true,
+                'multiple' => false,
             ])
             ->add('dateOfBirth', DateType::class, [ 
                 'widget' => 'single_text',

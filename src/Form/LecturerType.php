@@ -7,7 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,9 +25,14 @@ class LecturerType extends AbstractType
             ->add('lecturerSpecialisation', TextType::class, [ 
                 'label' => 'Specialisation',
             ])
-            ->add('lecturerGender', CheckboxType::class, [ 
-                'label' => 'Gender (Male)',
-                'required' => false,
+            ->add('lecturerGender', ChoiceType::class, [ 
+                'label' => 'Gender',
+                'choices'  => [
+                    'Male' => 'male',
+                    'Female' => 'female',
+                ],
+                'expanded' => true,
+                'multiple' => false,
             ]);
     }
 
