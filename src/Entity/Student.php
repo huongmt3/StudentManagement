@@ -30,7 +30,7 @@ class Student
     private $studentEmail; 
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string", length=10)
      */
     private $studentGender; 
 
@@ -89,12 +89,12 @@ class Student
         return $this;
     }
 
-    public function isStudentGender(): ?bool
+    public function getStudentGender(): ?string
     {
         return $this->studentGender; 
     }
 
-    public function setStudentGender(bool $studentGender): self 
+    public function setStudentGender(string $studentGender): self 
     {
         $this->studentGender = $studentGender; 
 

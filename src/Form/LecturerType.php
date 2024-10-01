@@ -33,6 +33,7 @@ class LecturerType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
+                'required' => true,
             ]);
     }
 

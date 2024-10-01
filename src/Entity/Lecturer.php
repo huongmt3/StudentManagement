@@ -35,7 +35,7 @@ class Lecturer
     private $lecturerSpecialisation;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="string", length=10)
      */
     private $lecturerGender;
 
@@ -46,7 +46,7 @@ class Lecturer
 
     public function __construct()
     {
-        $this->courses = new ArrayCollection(); // Khởi tạo tập hợp courses
+        $this->courses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -90,12 +90,12 @@ class Lecturer
         return $this;
     }
 
-    public function isLecturerGender(): ?bool
+    public function getLecturerGender(): ?string
     {
         return $this->lecturerGender;
     }
 
-    public function setLecturerGender(bool $lecturerGender): self
+    public function setLecturerGender(string $lecturerGender): self
     {
         $this->lecturerGender = $lecturerGender;
 

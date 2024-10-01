@@ -30,6 +30,7 @@ class StudentType extends AbstractType
                 ],
                 'expanded' => true,
                 'multiple' => false,
+                'required' => true,
             ])
             ->add('dateOfBirth', DateType::class, [ 
                 'widget' => 'single_text',
