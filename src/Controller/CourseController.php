@@ -1,10 +1,13 @@
-<?php
+<?php 
 
 namespace App\Controller;
 
 use App\Entity\Course;
-use App\Entity\Lecturer;
+use App\Entity\StudentCourseDetails;
+use App\Entity\Student;
 use App\Form\CourseType;
+use App\Repository\CourseRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,81 +30,115 @@ class CourseController extends AbstractController
     /**
      * @Route("/course/create", name="course_create")
      */
-    public function create(Request $request): Response
-    {
-        $course = new Course();
-        $form = $this->createForm(CourseType::class, $course);
+    public function create(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $course = new Course();
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($course);
-            $entityManager->flush();
+    $students = $entityManager->getRepository(Student::class)->findAll();
 
-            return $this->redirectToRoute('course_index');
-        }
+    $form = $this->createForm(CourseType::class, $course, [
+        'students' => $students,
+    ]);
 
-        return $this->render('course/create.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
-     * @Route("/course/{id}", name="course_details")
-     */
-    public function details(int $id): Response
-    {
-        $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
-
-        if (!$course) {
-            throw $this->createNotFoundException('No course found for id ' . $id);
-        }
-
-        return $this->render('course/details.html.twig', [
-            'course' => $course,
-        ]);
-    }
-
-    /**
-     * @Route("/course/edit/{id}", name="course_edit")
-     */
-    public function edit(Request $request, int $id): Response
-    {
-        $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
-
-        if (!$course) {
-            throw $this->createNotFoundException('No course found for id ' . $id);
-        }
-
-        $form = $this->createForm(CourseType::class, $course);
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('course_index');
-        }
-
-        return $this->render('course/edit.html.twig', [
-            'form' => $form->createView(),
-            'course' => $course,
-        ]);
-    }
-
-    /**
-     * @Route("/course/delete/{id}", name="course_delete")
-     */
-    public function delete(int $id): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-        $course = $entityManager->getRepository(Course::class)->find($id);
-
-        if (!$course) {
-            throw $this->createNotFoundException('No course found for id ' . $id);
-        }
-
-        $entityManager->remove($course);
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($course);
         $entityManager->flush();
+    
+        return $this->redirectToRoute('course_index');
+    }
+    
+
+    return $this->render('course/create.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
+
+    /**
+ * @Route("/course/edit/{id}", name="course_edit")
+ */
+public function edit(Request $request, CourseRepository $courseRepository, EntityManagerInterface $entityManager, int $id): Response
+{
+    $course = $courseRepository->find($id);
+
+    if (!$course) {
+        throw $this->createNotFoundException('No course found for id ' . $id);
+    }
+
+    $students = $entityManager->getRepository(Student::class)->findAll();
+    
+    $enrolledStudents = $course->getStudentCourseDetails()->map(function ($detail) {
+        return $detail->getStudent();
+    })->toArray();
+
+    $form = $this->createForm(CourseType::class, $course, [
+        'students' => $students,
+        'enrolled_students' => $enrolledStudents,
+    ]);
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        foreach ($course->getStudentCourseDetails() as $detail) {
+            $course->removeStudentCourseDetail($detail);
+        }
+
+        $selectedStudents = $form->get('students')->getData();
+
+        foreach ($selectedStudents as $student) {
+            $detail = new StudentCourseDetails();
+            $detail->setCourse($course);
+            $detail->setStudent($student);
+            $course->addStudentCourseDetail($detail);
+        }
+
+        $entityManager->persist($course);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('course_index');
+    }
+
+    return $this->render('course/edit.html.twig', [
+        'form' => $form->createView(),
+        'course' => $course,
+    ]);
+}
+
+/**
+ * @Route("/course/details/{id}", name="course_details")
+ */
+public function details(int $id, EntityManagerInterface $entityManager): Response
+{
+    $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
+
+    if (!$course) {
+        throw $this->createNotFoundException('No course found for id ' . $id);
+    }
+
+    $students = $entityManager->getRepository(Student::class)->findAll();
+
+    return $this->render('course/details.html.twig', [
+        'course' => $course,
+        'students' => $students,
+    ]);
+}
+
+    /**
+     * @Route("/course/delete/{id}", name="course_delete", methods={"POST"})
+     */
+    public function delete(Request $request, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
+
+        if (!$course) {
+            throw $this->createNotFoundException('No course found for id ' . $id);
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $course->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($course);
+            $entityManager->flush();
+        }
 
         return $this->redirectToRoute('course_index');
     }

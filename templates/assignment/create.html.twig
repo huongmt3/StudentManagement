@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Assignment{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Create New Assignment</h1>
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary">Create Assignment</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('assignment_index') }}" class="btn btn-secondary mt-3">Back to Assignment List</a>
+    </div>
+{% endblock %}

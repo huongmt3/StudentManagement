@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assignment Details{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Assignment Details</h1>
+
+        <ul>
+            <li><strong>Name:</strong> {{ assignment.assignmentName }}</li>
+            <li><strong>Course:</strong> {{ assignment.course.courseName }}</li>
+            <li><strong>Due Date:</strong> {{ assignment.dueDate|date('Y-m-d') }}</li>
+            <li><strong>Status:</strong> {{ assignment.status }}</li>
+            <li><strong>Students:</strong>
+                <ul>
+                    {% for student in assignment.joinedStudent %}
+                        <li>{{ student.name }}</li>
+                    {% else %}
+                        <li>No students assigned to this assignment</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+
+        <a href="{{ path('assignment_edit', {'id': assignment.id}) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ path('assignment_index') }}" class="btn btn-secondary">Back to Assignment List</a>
+    </div>
+{% endblock %}

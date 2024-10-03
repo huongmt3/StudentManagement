@@ -63,7 +63,7 @@ class Course
     public function __construct()
     {
         $this->studentCourseDetails = new ArrayCollection();
-        $this->assignments = new ArrayCollection(); // Khởi tạo tập hợp assignments
+        $this->assignments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -134,19 +134,31 @@ class Course
     /**
      * @return Collection|StudentCourseDetails[]
      */
+    // public function getStudentCourseDetails(): Collection
+    // {
+    //     return $this->studentCourseDetails;
+    // }
+
+    public function addStudentCourseDetail(StudentCourseDetails $detail): self
+    {
+        if (!$this->studentCourseDetails->contains($detail)) {
+            $this->studentCourseDetails[] = $detail;
+            $detail->setCourse($this);
+        }
+
+        return $this;
+    }
+
     public function getStudentCourseDetails(): Collection
     {
         return $this->studentCourseDetails;
     }
 
-    public function addStudentCourseDetail(StudentCourseDetails $studentCourseDetail): self
+    public function getStudents(): Collection
     {
-        if (!$this->studentCourseDetails->contains($studentCourseDetail)) {
-            $this->studentCourseDetails[] = $studentCourseDetail;
-            $studentCourseDetail->setCourse($this);
-        }
-
-        return $this;
+        return $this->studentCourseDetails->map(function (StudentCourseDetails $detail) {
+            return $detail->getStudent();
+        });
     }
 
     public function removeStudentCourseDetail(StudentCourseDetails $studentCourseDetail): self

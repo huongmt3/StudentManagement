@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assignment List{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Assignment List</h1>
+        <div class="mb-3">
+            <a href="{{ path('assignment_create') }}" class="btn btn-secondary">Add New Assignment</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Course</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment.assignmentName }}</td>
+                        <td>{{ assignment.course.courseName }}</td>
+                        <td>{{ assignment.dueDate|date('Y-m-d') }}</td>
+                        <td>{{ assignment.status }}</td>
+                        <td>
+                            <a href="{{ path('assignment_details', {'id': assignment.id}) }}" class="btn btn-info btn-sm">Details</a>
+                            <a href="{{ path('assignment_edit', {'id': assignment.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ path('assignment_delete', {'id': assignment.id}) }}" method="post" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ assignment.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">No assignments found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

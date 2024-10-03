@@ -4,12 +4,14 @@ namespace App\Form;
 
 use App\Entity\Course;
 use App\Entity\Lecturer;
+use App\Entity\Student;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CourseType extends AbstractType
@@ -36,8 +38,17 @@ class CourseType extends AbstractType
             ])
             ->add('instructor', EntityType::class, [
                 'class' => Lecturer::class,
-                'choice_label' => 'lecturer_name',
+                'choice_label' => 'lecturerName',
                 'label' => 'Instructor',
+            ])
+            ->add('students', ChoiceType::class, [
+                'choices' => $options['students'],
+                'choice_label' => function (Student $student) {
+                    return $student->getStudentName();
+                },
+                'expanded' => true,
+                'multiple' => true,
+                'mapped' => false,
             ]);
     }
 
@@ -45,7 +56,9 @@ class CourseType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Course::class,
+            'students' => [],
         ]);
     }
 }
+
 

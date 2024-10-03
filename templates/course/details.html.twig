@@ -15,6 +15,30 @@
             <li><strong>Instructor:</strong> {{ course.instructor.lecturerName }}</li>
         </ul>
 
+        <h2>Enrolled Students</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student.getStudentName() }}</td>
+                        <td>{{ student.getStudentEmail() }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">No students enrolled in this course</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <a href="{{ path('course_edit', {'id': course.id}) }}" class="btn btn-warning">Edit</a>
         <a href="{{ path('course_index') }}" class="btn btn-secondary">Back to Course List</a>
     </div>
