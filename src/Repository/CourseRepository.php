@@ -63,4 +63,35 @@ class CourseRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+// src/Controller/CourseController.php
+
+public function removeStudentFromCourse(Request $request, Course $course, Student $student): Response
+{
+    $studentCourseDetail = $this->getDoctrine()->getRepository(StudentCourseDetails::class)
+        ->findOneBy(['course' => $course, 'student' => $student]);
+
+    if ($studentCourseDetail) {
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($studentCourseDetail);
+        $entityManager->flush();
+    }
+
+    return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
+}
+
+public function addStudentToCourse(Request $request, Course $course, Student $student): Response
+{
+    $entityManager = $this->getDoctrine()->getManager();
+
+    $studentCourseDetail = new StudentCourseDetails();
+    $studentCourseDetail->setCourse($course);
+    $studentCourseDetail->setStudent($student);
+
+    $entityManager->persist($studentCourseDetail);
+    $entityManager->flush();
+
+    return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
+}
+
 }

@@ -8,9 +8,53 @@
 
         {{ form_start(form) }}
             {{ form_widget(form) }}
-            <button class="btn btn-warning">Update Course</button>
         {{ form_end(form) }}
 
+        <div class="mt-4">
+            <h3>Students in Course</h3>
+            <button id="show-registered" class="btn btn-primary">Show Registered Students</button>
+            <button id="show-all" class="btn btn-secondary">Show All Students</button>
+
+            <div id="registered-students" class="mt-3" style="display: block;">
+                <h4>Registered Students</h4>
+                <ul>
+                    {% for student in registeredStudents %}
+                        <li>{{ student.studentName }} 
+                            <a href="{{ path('course_edit', { id: course.id }) }}?removeStudentId={{ student.id }}" class="btn btn-danger btn-sm">Remove</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div id="all-students" class="mt-3" style="display: none;">
+                <h4>All Students</h4>
+                <ul>
+                    {% for student in allStudents %}
+                        {% if student.id in registeredStudents|map(student => student.id) %}
+                            <li>{{ student.studentName }} (Already registered)</li>
+                        {% else %}
+                            <li>{{ student.studentName }} 
+                                <a href="{{ path('course_edit', { id: course.id }) }}?addStudentId={{ student.id }}" class="btn btn-success btn-sm">Add</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <a href="{{ path('course_details', { id: course.id }) }}" class="btn btn-warning">Update Course</a>
+
         <a href="{{ path('course_index') }}" class="btn btn-secondary">Back to Course List</a>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('show-registered').addEventListener('click', function() {
+            document.getElementById('registered-students').style.display = 'block';
+            document.getElementById('all-students').style.display = 'none';
+        });
+
+        document.getElementById('show-all').addEventListener('click', function() {
+            document.getElementById('registered-students').style.display = 'none';
+            document.getElementById('all-students').style.display = 'block';
+        });
+    </script>
 {% endblock %}
