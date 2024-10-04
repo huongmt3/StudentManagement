@@ -47,7 +47,7 @@ class Assignment
 
     public function __construct()
     {
-        $this->studentAsmDetails = new ArrayCollection(); // Khởi tạo tập hợp studentAsmDetails
+        $this->studentAsmDetails = new ArrayCollection();
     }
 
     public function getId(): ?int

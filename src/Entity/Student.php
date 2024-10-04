@@ -57,7 +57,7 @@ class Student
     public function __construct()
     {
         $this->studentCourseDetails = new ArrayCollection();
-        $this->studentAsmDetails = new ArrayCollection(); // Khởi tạo tập hợp StudentAsmDetails
+        $this->studentAsmDetails = new ArrayCollection();
     }
 
     public function getId(): ?int

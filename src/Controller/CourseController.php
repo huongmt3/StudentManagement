@@ -63,58 +63,52 @@ class CourseController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
 
+    /**
+     * @Route("/course/edit/{id}", name="course_edit")
+     */
+    public function edit(Request $request, $id, EntityManagerInterface $entityManager): Response
+    {
+        $course = $entityManager->getRepository(Course::class)->find($id);
 
-   /**
- * @Route("/course/edit/{id}", name="course_edit")
- */
-public function edit(Request $request, $id, EntityManagerInterface $entityManager): Response
-{
-    // Lấy khóa học từ cơ sở dữ liệu
-    $course = $entityManager->getRepository(Course::class)->find($id);
-
-    if (!$course) {
-        throw $this->createNotFoundException('Course not found');
-    }
-
-    $form = $this->createForm(CourseType::class, $course);
-    
-    // Lấy danh sách tất cả sinh viên và sinh viên đã đăng ký khóa học
-    $allStudents = $entityManager->getRepository(Student::class)->findAll();
-    $registeredStudents = $course->getStudents();
-
-    $form->handleRequest($request);
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
-        return $this->redirectToRoute('course_index');
-    }
-
-    $removeStudentId = $request->query->get('removeStudentId');
-    if ($removeStudentId) {
-        // Logic to find the student by ID and remove from course
-        $student = $this->getDoctrine()->getRepository(Student::class)->find($removeStudentId);
-        if ($student) {
-            return $this->removeStudentFromCourse($request, $course, $student);
+        if (!$course) {
+            throw $this->createNotFoundException('Course not found');
         }
-    }
 
-    $addStudentId = $request->query->get('addStudentId');
-    if ($addStudentId) {
-        $student = $this->getDoctrine()->getRepository(Student::class)->find($addStudentId);
-        if ($student) {
-            return $this->addStudentToCourse($request, $course, $student);
+        $form = $this->createForm(CourseType::class, $course);
+    
+        $allStudents = $entityManager->getRepository(Student::class)->findAll();
+        $registeredStudents = $course->getStudents();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            return $this->redirectToRoute('course_index');
         }
+
+        $removeStudentId = $request->query->get('removeStudentId');
+        if ($removeStudentId) {
+            $student = $this->getDoctrine()->getRepository(Student::class)->find($removeStudentId);
+            if ($student) {
+                return $this->removeStudentFromCourse($request, $course, $student);
+            }
+        }
+
+        $addStudentId = $request->query->get('addStudentId');
+        if ($addStudentId) {
+            $student = $this->getDoctrine()->getRepository(Student::class)->find($addStudentId);
+            if ($student) {
+                return $this->addStudentToCourse($request, $course, $student);
+            }
+        }
+
+        return $this->render('course/edit.html.twig', [
+            'form' => $form->createView(),
+            'course' => $course,
+            'allStudents' => $allStudents,
+            'registeredStudents' => $registeredStudents,
+        ]);
     }
-
-    return $this->render('course/edit.html.twig', [
-        'form' => $form->createView(),
-        'course' => $course,
-        'allStudents' => $allStudents,
-        'registeredStudents' => $registeredStudents,
-    ]);
-}
-
 
     /**
      * @Route("/course/details/{id}", name="course_details")
@@ -144,49 +138,48 @@ public function edit(Request $request, $id, EntityManagerInterface $entityManage
     /**
      * @Route("/course/delete/{id}", name="course_delete", methods={"POST"})
      */
-    public function delete(Request $request, int $id, EntityManagerInterface $entityManager): Response
+    public function deleteCourse($id, EntityManagerInterface $entityManager)
     {
-        $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
+        $course = $entityManager->getRepository(Course::class)->find($id);
 
-        if (!$course) {
-            throw $this->createNotFoundException('No course found for id ' . $id);
-        }
+        if ($course) {
+            $studentsInCourse = $entityManager->getRepository(StudentCourseDetails::class)->findBy(['course' => $course]);
 
-        if ($this->isCsrfTokenValid('delete' . $course->getId(), $request->request->get('_token'))) {
+            foreach ($studentsInCourse as $studentCourse) {
+                $entityManager->remove($studentCourse);
+            }
+
             $entityManager->remove($course);
             $entityManager->flush();
         }
-
         return $this->redirectToRoute('course_index');
     }
 
     public function addStudentToCourse(Request $request, Course $course, Student $student): Response
-{
-    $entityManager = $this->getDoctrine()->getManager();
-
-    // Tạo một StudentCourseDetails mới
-    $studentCourseDetail = new StudentCourseDetails();
-    $studentCourseDetail->setCourse($course);
-    $studentCourseDetail->setStudent($student);
-
-    $entityManager->persist($studentCourseDetail);
-    $entityManager->flush();
-
-    return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
-}
-
-public function removeStudentFromCourse(Request $request, Course $course, Student $student): Response
-{
-    $studentCourseDetail = $this->getDoctrine()->getRepository(StudentCourseDetails::class)
-        ->findOneBy(['course' => $course, 'student' => $student]);
-
-    if ($studentCourseDetail) {
+    {
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($studentCourseDetail);
+
+        $studentCourseDetail = new StudentCourseDetails();
+        $studentCourseDetail->setCourse($course);
+        $studentCourseDetail->setStudent($student);
+
+        $entityManager->persist($studentCourseDetail);
         $entityManager->flush();
+
+        return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
     }
 
-    return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
-}
-}
+    public function removeStudentFromCourse(Request $request, Course $course, Student $student): Response
+    {
+        $studentCourseDetail = $this->getDoctrine()->getRepository(StudentCourseDetails::class)
+            ->findOneBy(['course' => $course, 'student' => $student]);
 
+        if ($studentCourseDetail) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($studentCourseDetail);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('course_edit', ['id' => $course->getId()]);
+    }
+}

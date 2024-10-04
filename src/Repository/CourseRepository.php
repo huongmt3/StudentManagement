@@ -64,8 +64,6 @@ class CourseRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-// src/Controller/CourseController.php
-
 public function removeStudentFromCourse(Request $request, Course $course, Student $student): Response
 {
     $studentCourseDetail = $this->getDoctrine()->getRepository(StudentCourseDetails::class)

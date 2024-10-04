@@ -17,8 +17,6 @@ use App\Form\StudentType;
 class StudentController extends AbstractController
 {
     /**
-     * Display all students
-     * 
      * @Route("", name="student_index")
      */
     public function indexAction()
@@ -33,8 +31,6 @@ class StudentController extends AbstractController
     }
 
     /**
-     * Finds and displays a student entity.
-     *
      * @Route("/{id}", name="student_details", requirements={"id"="\d+"})
      */
     public function showAction(StudentRepository $studentRepository, int $id): Response

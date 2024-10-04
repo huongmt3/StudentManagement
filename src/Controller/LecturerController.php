@@ -17,8 +17,6 @@ use App\Form\LecturerType;
 class LecturerController extends AbstractController
 {
     /**
-     * Display all lecturers
-     * 
      * @Route("", name="lecturer_index")
      */
     public function indexAction()
@@ -33,8 +31,6 @@ class LecturerController extends AbstractController
     }
 
     /**
-     * Finds and displays a lecturer entity.
-     *
      * @Route("/{id}", name="lecturer_details", requirements={"id"="\d+"})
      */
     public function showAction(LecturerRepository $lecturerRepository, int $id): Response

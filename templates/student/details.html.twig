@@ -6,11 +6,11 @@
     <h1>Student Details</h1>
 
     <ul>
-        <li><strong>Name:</strong> {{ student.studentName }}</li> <!-- Updated to camel case -->
-        <li><strong>Email:</strong> {{ student.studentEmail }}</li> <!-- Updated to camel case -->
-        <li><strong>Gender:</strong> {{ student.studentGender ? 'Male' : 'Female' }}</li> <!-- Updated to camel case -->
-        <li><strong>Date of Birth:</strong> {{ student.dateOfBirth ? student.dateOfBirth|date('Y-m-d') : '' }}</li> <!-- Updated to camel case -->
-        <li><strong>Registration Date:</strong> {{ student.registrationDate ? student.registrationDate|date('Y-m-d') : '' }}</li> <!-- Updated to camel case -->
+        <li><strong>Name:</strong> {{ student.studentName }}</li>
+        <li><strong>Email:</strong> {{ student.studentEmail }}</li>
+        <li><strong>Gender:</strong> {{ student.studentGender ? 'Male' : 'Female' }}</li>
+        <li><strong>Date of Birth:</strong> {{ student.dateOfBirth ? student.dateOfBirth|date('Y-m-d') : '' }}</li>
+        <li><strong>Registration Date:</strong> {{ student.registrationDate ? student.registrationDate|date('Y-m-d') : '' }}</li>
     </ul>
 
     <a href="{{ path('student_edit', {'id': student.id}) }}">Edit</a>
