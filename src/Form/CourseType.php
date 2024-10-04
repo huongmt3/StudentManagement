@@ -41,11 +41,10 @@ class CourseType extends AbstractType
                 'choice_label' => 'lecturerName',
                 'label' => 'Instructor',
             ])
-            ->add('students', ChoiceType::class, [
+            ->add('students', EntityType::class, [
+                'class' => Student::class,
                 'choices' => $options['students'],
-                'choice_label' => function (Student $student) {
-                    return $student->getStudentName();
-                },
+                'choice_label' => 'studentName',
                 'expanded' => true,
                 'multiple' => true,
                 'mapped' => false,

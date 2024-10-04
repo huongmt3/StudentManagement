@@ -31,98 +31,115 @@ class CourseController extends AbstractController
      * @Route("/course/create", name="course_create")
      */
     public function create(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $course = new Course();
-
-    $students = $entityManager->getRepository(Student::class)->findAll();
-
-    $form = $this->createForm(CourseType::class, $course, [
-        'students' => $students,
-    ]);
-
-    $form->handleRequest($request);
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->persist($course);
-        $entityManager->flush();
+    {
+        $course = new Course();
     
-        return $this->redirectToRoute('course_index');
+        $students = $entityManager->getRepository(Student::class)->findAll();
+    
+        $form = $this->createForm(CourseType::class, $course, [
+            'students' => $students,
+        ]);
+    
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedStudents = $form->get('students')->getData();
+    
+            $entityManager->persist($course);
+            $entityManager->flush();
+    
+            foreach ($selectedStudents as $student) {
+                $studentCourseDetail = new StudentCourseDetails();
+                $studentCourseDetail->setCourse($course);
+                $studentCourseDetail->setStudent($student);
+                $entityManager->persist($studentCourseDetail);
+            }
+    
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('course_index');
+        }
+    
+        return $this->render('course/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
     
-
-    return $this->render('course/create.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
 
 
     /**
- * @Route("/course/edit/{id}", name="course_edit")
- */
-public function edit(Request $request, CourseRepository $courseRepository, EntityManagerInterface $entityManager, int $id): Response
-{
-    $course = $courseRepository->find($id);
+     * @Route("/course/edit/{id}", name="course_edit")
+     */
+    public function edit(Request $request, CourseRepository $courseRepository, EntityManagerInterface $entityManager, int $id): Response
+    {
+        $course = $courseRepository->find($id);
 
-    if (!$course) {
-        throw $this->createNotFoundException('No course found for id ' . $id);
-    }
-
-    $students = $entityManager->getRepository(Student::class)->findAll();
-    
-    $enrolledStudents = $course->getStudentCourseDetails()->map(function ($detail) {
-        return $detail->getStudent();
-    })->toArray();
-
-    $form = $this->createForm(CourseType::class, $course, [
-        'students' => $students,
-        'enrolled_students' => $enrolledStudents,
-    ]);
-
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        foreach ($course->getStudentCourseDetails() as $detail) {
-            $course->removeStudentCourseDetail($detail);
+        if (!$course) {
+            throw $this->createNotFoundException('No course found for id ' . $id);
         }
 
-        $selectedStudents = $form->get('students')->getData();
+        $students = $entityManager->getRepository(Student::class)->findAll();
 
-        foreach ($selectedStudents as $student) {
-            $detail = new StudentCourseDetails();
-            $detail->setCourse($course);
-            $detail->setStudent($student);
-            $course->addStudentCourseDetail($detail);
+        $enrolledStudents = $course->getStudentCourseDetails()->map(function ($detail) {
+            return $detail->getStudent();
+        })->toArray();
+
+        $form = $this->createForm(CourseType::class, $course, [
+            'students' => $students,
+            'enrolled_students' => $enrolledStudents,
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($course->getStudentCourseDetails() as $detail) {
+                $course->removeStudentCourseDetail($detail);
+            }
+
+            $selectedStudents = $form->get('students')->getData();
+
+            foreach ($selectedStudents as $student) {
+                $detail = new StudentCourseDetails();
+                $detail->setCourse($course);
+                $detail->setStudent($student);
+                $course->addStudentCourseDetail($detail);
+            }
+
+            $entityManager->persist($course);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('course_index');
         }
 
-        $entityManager->persist($course);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('course_index');
+        return $this->render('course/edit.html.twig', [
+            'form' => $form->createView(),
+            'course' => $course,
+        ]);
     }
 
-    return $this->render('course/edit.html.twig', [
-        'form' => $form->createView(),
-        'course' => $course,
-    ]);
-}
+    /**
+     * @Route("/course/details/{id}", name="course_details")
+     */
+    public function details(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $course = $entityManager->getRepository(Course::class)->find($id);
 
-/**
- * @Route("/course/details/{id}", name="course_details")
- */
-public function details(int $id, EntityManagerInterface $entityManager): Response
-{
-    $course = $this->getDoctrine()->getRepository(Course::class)->find($id);
+        if (!$course) {
+            throw $this->createNotFoundException('No course found for id ' . $id);
+        }
 
-    if (!$course) {
-        throw $this->createNotFoundException('No course found for id ' . $id);
+        $studentCourseDetails = $entityManager->getRepository(StudentCourseDetails::class)
+                                              ->findBy(['course' => $course]);
+
+        $students = [];
+        foreach ($studentCourseDetails as $detail) {
+            $students[] = $detail->getStudent();
+        }
+
+        return $this->render('course/details.html.twig', [
+            'course' => $course,
+            'students' => $students,
+        ]);
     }
-
-    $students = $entityManager->getRepository(Student::class)->findAll();
-
-    return $this->render('course/details.html.twig', [
-        'course' => $course,
-        'students' => $students,
-    ]);
-}
 
     /**
      * @Route("/course/delete/{id}", name="course_delete", methods={"POST"})

@@ -159,7 +159,7 @@ class Course
         return $this->studentCourseDetails->map(function (StudentCourseDetails $detail) {
             return $detail->getStudent();
         });
-    }
+    }    
 
     public function removeStudentCourseDetail(StudentCourseDetails $studentCourseDetail): self
     {
