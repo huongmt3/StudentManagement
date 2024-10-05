@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Assignment;
 use App\Entity\Course;
 use App\Form\AssignmentType;
+use App\Entity\StudentAsmDetails;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,13 +37,20 @@ class AssignmentController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedCourse = $assignment->getCourse();
-            $students = $selectedCourse->getStudents();
 
-            foreach ($students as $student) {
-                $assignment->addJoinedStudent($student);
+            if ($selectedCourse) {
+                $students = $selectedCourse->getStudents();
+
+                foreach ($students as $student) {
+                    $studentAsmDetail = new StudentAsmDetails();
+                    $studentAsmDetail->setAssignment($assignment);
+                    $studentAsmDetail->setStudent($student);
+
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($studentAsmDetail);
+                }
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($assignment);
             $entityManager->flush();
 
@@ -57,7 +65,7 @@ class AssignmentController extends AbstractController
     /**
      * @Route("/assignment/{id}", name="assignment_details")
      */
-    public function details(int $id): Response
+    public function details($id): Response
     {
         $assignment = $this->getDoctrine()->getRepository(Assignment::class)->find($id);
 
@@ -65,8 +73,11 @@ class AssignmentController extends AbstractController
             throw $this->createNotFoundException('No assignment found for id ' . $id);
         }
 
+        $studentAsmDetails = $this->getDoctrine()->getRepository(StudentAsmDetails::class)->findBy(['assignment' => $assignment]);
+
         return $this->render('assignment/details.html.twig', [
             'assignment' => $assignment,
+            'studentAsmDetails' => $studentAsmDetails,
         ]);
     }
 
@@ -85,16 +96,25 @@ class AssignmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
             $selectedCourse = $assignment->getCourse();
-            $students = $selectedCourse->getStudents();
+            $students = $selectedCourse ? $selectedCourse->getStudents() : [];
 
-            $assignment->clearJoinedStudents();
-
-            foreach ($students as $student) {
-                $assignment->addJoinedStudent($student);
+            foreach ($assignment->getStudentAsmDetails() as $detail) {
+                $entityManager->remove($detail);
             }
 
-            $this->getDoctrine()->getManager()->flush();
+            foreach ($students as $student) {
+                $studentAsmDetail = new StudentAsmDetails();
+                $studentAsmDetail->setAssignment($assignment);
+                $studentAsmDetail->setStudent($student);
+                $entityManager->persist($studentAsmDetail);
+                $assignment->addStudentAsmDetail($studentAsmDetail);
+            }
+
+            $entityManager->persist($assignment);
+            $entityManager->flush();
 
             return $this->redirectToRoute('assignment_index');
         }
@@ -115,6 +135,10 @@ class AssignmentController extends AbstractController
 
         if (!$assignment) {
             throw $this->createNotFoundException('No assignment found for id ' . $id);
+        }
+
+        foreach ($assignment->getStudentAsmDetails() as $detail) {
+            $entityManager->remove($detail);
         }
 
         $entityManager->remove($assignment);

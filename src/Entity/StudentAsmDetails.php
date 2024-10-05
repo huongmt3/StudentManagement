@@ -19,13 +19,13 @@ class StudentAsmDetails
 
     /**
      * @ORM\ManyToOne(targetEntity=Student::class, inversedBy="studentAsmDetails")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="student_id", referencedColumnName="id", nullable=false)
      */
     private $student;
 
     /**
      * @ORM\ManyToOne(targetEntity=Assignment::class, inversedBy="studentAsmDetails")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="assignment_id", referencedColumnName="id", nullable=false)
      */
     private $assignment;
 

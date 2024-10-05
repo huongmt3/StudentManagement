@@ -13,8 +13,8 @@
             <li><strong>Status:</strong> {{ assignment.status }}</li>
             <li><strong>Students:</strong>
                 <ul>
-                    {% for student in assignment.joinedStudent %}
-                        <li>{{ student.name }}</li>
+                    {% for detail in studentAsmDetails %}
+                        <li>{{ detail.student.studentName }}</li>
                     {% else %}
                         <li>No students assigned to this assignment</li>
                     {% endfor %}
