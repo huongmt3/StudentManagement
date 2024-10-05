@@ -27,7 +27,7 @@
                             <td>{{ lecturer.lecturerName }}</td>
                             <td>{{ lecturer.lecturerEmail }}</td>
                             <td>{{ lecturer.lecturerSpecialisation }}</td>
-                            <td>{{ lecturer.lecturerGender ? 'Male' : 'Female' }}</td>
+                            <td>{{ lecturer.lecturerGender  == 'male' ? 'Male' : 'Female'  }}</td>
                             <td>
                                 <a href="{{ path('lecturer_details', {'id': lecturer.id}) }}" class="btn btn-info btn-sm">Details</a>
                                 <a href="{{ path('lecturer_edit', {'id': lecturer.id}) }}" class="btn btn-warning btn-sm">Edit</a>

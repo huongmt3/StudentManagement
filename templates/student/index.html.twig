@@ -27,7 +27,7 @@
                         <tr>
                             <td>{{ student.studentName }}</td>
                             <td>{{ student.studentEmail }}</td>
-                            <td>{{ student.studentGender ? 'Male' : 'Female' }}</td>
+                           <td>{{ student.studentGender == 'male' ? 'Male' : 'Female' }}</td>
                             <td>{{ student.dateOfBirth|date('d/m/Y') }}</td>
                             <td>{{ student.registrationDate|date('d/m/Y') }}</td>
                             <td>

@@ -8,7 +8,7 @@
     <ul>
         <li><strong>Name:</strong> {{ student.studentName }}</li>
         <li><strong>Email:</strong> {{ student.studentEmail }}</li>
-        <li><strong>Gender:</strong> {{ student.studentGender ? 'Male' : 'Female' }}</li>
+        <li><strong>Gender:</strong> {{ student.studentGender == 'male' ? 'Male' : 'Female' }}</li>
         <li><strong>Date of Birth:</strong> {{ student.dateOfBirth ? student.dateOfBirth|date('Y-m-d') : '' }}</li>
         <li><strong>Registration Date:</strong> {{ student.registrationDate ? student.registrationDate|date('Y-m-d') : '' }}</li>
     </ul>

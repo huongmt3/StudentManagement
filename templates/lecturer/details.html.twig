@@ -9,7 +9,7 @@
         <li><strong>Name:</strong> {{ lecturer.lecturerName }}</li>
         <li><strong>Email:</strong> {{ lecturer.lecturerEmail }}</li>
         <li><strong>Specialisation:</strong> {{ lecturer.lecturerSpecialisation }}</li>
-        <li><strong>Gender:</strong> {{ lecturer.lecturerGender ? 'Male' : 'Female' }}</li>
+        <li><strong>Gender:</strong> {{ lecturer.lecturerGender  == 'male' ? 'Male' : 'Female' }}</li>
     </ul>
 
     <a href="{{ path('lecturer_edit', {'id': lecturer.id}) }}">Edit</a>
