@@ -12,6 +12,6 @@
         <li><strong>Gender:</strong> {{ lecturer.lecturerGender  == 'male' ? 'Male' : 'Female' }}</li>
     </ul>
 
-    <a href="{{ path('lecturer_edit', {'id': lecturer.id}) }}">Edit</a>
-    <a href="{{ path('lecturer_index') }}">Back to Lecturer List</a>
+    <a href="{{ path('lecturer_edit', {'id': lecturer.id}) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ path('lecturer_index') }}" class="btn btn-primary">Back to Lecturer List</a>
 {% endblock %}

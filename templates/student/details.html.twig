@@ -13,6 +13,6 @@
         <li><strong>Registration Date:</strong> {{ student.registrationDate ? student.registrationDate|date('Y-m-d') : '' }}</li>
     </ul>
 
-    <a href="{{ path('student_edit', {'id': student.id}) }}">Edit</a>
-    <a href="{{ path('student_index') }}">Back to Student List</a>
+    <a href="{{ path('student_edit', {'id': student.id}) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ path('student_index') }}" class="btn btn-primary">Back to Student List</a>
 {% endblock %}

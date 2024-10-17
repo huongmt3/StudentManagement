@@ -127,4 +127,5 @@ class LecturerController extends AbstractController
 
         return $this->redirectToRoute('lecturer_index');
     }
+
 }

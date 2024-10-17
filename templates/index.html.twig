@@ -17,7 +17,7 @@
             padding: 0;
         }
         .header {
-            background-image: url('https://images.unsplash.com/photo-1666658442535-3c8317e077bf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-image: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1532&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
             color: white;
@@ -101,10 +101,10 @@
                 <h1>StevilSquad</h1>
             </div>
             <ul>
-                <li><a href="#">Students</a></li>
-                <li><a href="#">Teachers</a></li>
-                <li><a href="#">Courses</a></li>
-                <li><a href="#">Assignments</a></li>
+                <li><a href="{{ path('student_index') }}">Students</a></li>
+                <li><a href="{{ path('lecturer_index') }}">Lecturers</a></li>
+                <li><a href="{{ path('course_index') }}">Courses</a></li>
+                <li><a href="{{ path('assignment_index') }}">Assignments</a></li>
             </ul>
         </nav>
 
@@ -117,8 +117,8 @@
     <div class="content">
         <h2>Welcome to StevilSquad Student Management</h2>
         <p>
-            We provide top-quality management services for cars, customers, parts, sales, and suppliers.
-            Our platform ensures smooth operations and helps businesses thrive in the automotive industry.
+            We offer top-quality management services for students, courses, assignments, attendance, and grades.
+            Our platform ensures seamless administration and helps educational institutions excel in student engagement and performance.
         </p>
     </div>
 
